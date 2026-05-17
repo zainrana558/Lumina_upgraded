@@ -33,3 +33,10 @@ next-env.d.ts
 
 # vite legacy
 /dist
+.vercel
+node_modules/
+.next/
+.vercel/
+.env*.local
+!.env.local.example
+
