@@ -1,24 +1,28 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { checkRateLimit } from "@/lib/security/rate-limit";
+import { validateOrigin } from "@/lib/security/csrf";
 
 const TMDB_BASE = "https://api.themoviedb.org/3";
-const rateLimitMap = new Map<string, { count: number; reset: number }>();
-
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now();
-  const entry = rateLimitMap.get(ip);
-  if (!entry || now > entry.reset) {
-    rateLimitMap.set(ip, { count: 1, reset: now + 60000 });
-    return true;
-  }
-  if (entry.count >= 60) return false;
-  entry.count++;
-  return true;
-}
 
 export async function GET(request: NextRequest) {
-  const ip = request.headers.get("x-forwarded-for") || "anonymous";
-  if (!checkRateLimit(ip)) {
-    return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 });
+  // Validate origin first
+  const originCheck = validateOrigin(request.headers);
+  if (!originCheck.valid) {
+    return NextResponse.json({ error: originCheck.error }, { status: 403 });
+  }
+
+  // Get client IP for rate limiting
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0] || 
+            request.headers.get("x-real-ip") || 
+            "anonymous";
+  
+  // Check rate limit (60 requests per minute for TMDB)
+  const rateCheck = await checkRateLimit(`tmdb:${ip}`, { limit: 60, window: 60 });
+  if (!rateCheck.allowed) {
+    return NextResponse.json(
+      { error: "Rate limit exceeded. Please try again later." },
+      { status: 429 }
+    );
   }
 
   const { searchParams } = new URL(request.url);
