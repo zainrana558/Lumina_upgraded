@@ -3,28 +3,28 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "Lumina — Premium Streaming",
-    template: "%s | Lumina",
+    default: "Lumina Streaming — Premium Streaming",
+    template: "%s | Lumina Streaming",
   },
   description: "A premium Netflix-style streaming platform with the latest movies and TV shows",
   keywords: ["streaming", "movies", "TV shows", "entertainment", "watch online"],
-  authors: [{ name: "Lumina" }],
-  creator: "Lumina",
-  publisher: "Lumina",
+  authors: [{ name: "Lumina Streaming" }],
+  creator: "Lumina Streaming",
+  publisher: "Lumina Streaming",
   
   // PWA support
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Lumina",
+    title: "Lumina Streaming",
   },
   
   // Open Graph
   openGraph: {
     type: "website",
     locale: "en_US",
-    siteName: "Lumina",
+    siteName: "Lumina Streaming",
   },
 };
 
