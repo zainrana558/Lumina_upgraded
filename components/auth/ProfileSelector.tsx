@@ -5,10 +5,11 @@ import { useRouter } from "next/navigation";
 import { createProfile, deleteProfile } from "@/actions/profiles";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Trash2, User, Loader2, LogOut } from "lucide-react";
+import { Plus, Trash2, User, Loader2, LogOut, ImageOff } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile } from "@/types";
 
+// Avatar color gradients (consistent based on name)
 const AVATAR_COLORS = [
   "from-purple-500 to-pink-500",
   "from-blue-500 to-cyan-500",
@@ -16,6 +17,87 @@ const AVATAR_COLORS = [
   "from-orange-500 to-red-500",
   "from-indigo-500 to-purple-500",
 ];
+
+/**
+ * Get initials from a name (handles single and multi-word names)
+ * "john doe" -> "JD"
+ * "john" -> "J"
+ * "María José" -> "MJ"
+ */
+function getInitials(name: string): string {
+  if (!name) return "?";
+  
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) {
+    // Single name: take first letter
+    return name.charAt(0).toUpperCase();
+  }
+  
+  // Multiple names: take first letter of first two parts
+  return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
+}
+
+/**
+ * Generate a consistent color index from a string
+ */
+function getColorIndex(name: string): number {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return Math.abs(hash) % AVATAR_COLORS.length;
+}
+
+/**
+ * Profile Avatar with fallback
+ */
+function ProfileAvatar({ 
+  profile, 
+  size = "lg" 
+}: { 
+  profile: { name: string; avatar_url: string | null }; 
+  size?: "sm" | "lg";
+}) {
+  const sizeClasses = size === "sm" ? "h-8 w-8 text-sm" : "h-24 w-24 text-3xl";
+  const initials = getInitials(profile.name);
+  const colorIndex = getColorIndex(profile.name);
+  
+  // Try to use avatar URL if available
+  const [imgError, setImgError] = useState(false);
+  const hasValidAvatar = profile.avatar_url && !imgError;
+  
+  return (
+    <div className="relative">
+      {hasValidAvatar ? (
+        <img
+          src={profile.avatar_url!}
+          alt={profile.name}
+          onError={() => setImgError(true)}
+          className={`${sizeClasses} rounded-xl object-cover`}
+        />
+      ) : (
+        // Fallback: initials avatar
+        <div
+          className={`flex items-center justify-center rounded-xl bg-gradient-to-br ${AVATAR_COLORS[colorIndex]} text-white font-bold shadow-lg ${sizeClasses}`}
+        >
+          {initials}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Small profile avatar for navbar
+ */
+function SmallProfileAvatar({ name, avatarUrl }: { name: string; avatarUrl: string | null }) {
+  return (
+    <ProfileAvatar 
+      profile={{ name, avatar_url: avatarUrl }} 
+      size="sm" 
+    />
+  );
+}
 
 export default function ProfileSelector({ profiles }: { profiles: Profile[] }) {
   const [showCreate, setShowCreate] = useState(false);
@@ -75,11 +157,7 @@ export default function ProfileSelector({ profiles }: { profiles: Profile[] }) {
               onClick={() => !managing && selectProfile(profile.id)}
               className="flex flex-col items-center gap-3 rounded-lg p-4 transition-transform hover:scale-105"
             >
-              <div
-                className={`flex h-24 w-24 items-center justify-center rounded-xl bg-gradient-to-br ${AVATAR_COLORS[i % AVATAR_COLORS.length]} text-3xl font-bold text-white shadow-lg`}
-              >
-                {profile.name.charAt(0).toUpperCase()}
-              </div>
+              <ProfileAvatar profile={profile} size="lg" />
               <span className="text-sm text-muted-foreground group-hover:text-foreground">
                 {profile.name}
               </span>
@@ -138,3 +216,5 @@ export default function ProfileSelector({ profiles }: { profiles: Profile[] }) {
     </div>
   );
 }
+
+export { ProfileAvatar, SmallProfileAvatar, getInitials };

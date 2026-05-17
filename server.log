@@ -1,0 +1,20 @@
+
+> lumina-streaming@1.0.0 dev
+> next dev
+
+   ▲ Next.js 15.5.18
+   - Local:        http://localhost:3000
+   - Network:      http://10.2.55.148:3000
+   - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 1330ms
+ ✓ Compiled /middleware in 294ms (212 modules)
+ ○ Compiling /api/tmdb ...
+ ✓ Compiled /api/tmdb in 1010ms (374 modules)
+ GET /api/tmdb?endpoint=/trending/movie/week 200 in 1174ms
+ ✓ Compiled /api/search in 234ms (377 modules)
+ GET /api/search?q=matrix 200 in 430ms
+ ✓ Compiled /api/embed in 121ms (380 modules)
+ GET /api/embed?tmdb=603&type=movie 200 in 152ms
+[?25h
