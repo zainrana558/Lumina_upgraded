@@ -107,7 +107,7 @@ export default function Navbar({ isGuest = false }: NavbarProps) {
             className="text-2xl font-bold transition-transform hover:scale-105"
             aria-label="Lumina Home"
           >
-            <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-[length:200%_auto] bg-clip-text text-transparent animate-x">
+            <span className="bg-gradient-to-r from-blue-400 via-cyan-400 to-green-400 bg-[length:200%_auto] bg-clip-text text-transparent animate-x">
               Lumina
             </span>
           </Link>
