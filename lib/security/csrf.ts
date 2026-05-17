@@ -110,6 +110,17 @@ export function validateOrigin(headers: Headers): { valid: boolean; error?: stri
     return { valid: true };
   }
 
+  // Allow all Vercel deployments (*.vercel.app) in production
+  if (origin) {
+    const vercelDomains = [".vercel.app", "lumina-upgraded.vercel.app"];
+    const isVercelDeployment = vercelDomains.some(domain => 
+      origin.endsWith(domain) || origin.includes(domain)
+    );
+    if (isVercelDeployment) {
+      return { valid: true };
+    }
+  }
+
   const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",") || [];
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
 
