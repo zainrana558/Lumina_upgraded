@@ -379,11 +379,16 @@ export default function VideoPlayer({
         <div className="flex-1 relative">
           {embedUrl ? (
             <iframe
+              key={embedUrl}
               src={embedUrl}
               className="absolute inset-0 w-full h-full"
               allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
               allowFullScreen
               title="Video Player"
+              onLoad={() => {
+                setLoading(false);
+                setLoadingMessage("");
+              }}
             />
           ) : (
             <div className="flex h-full items-center justify-center text-muted-foreground">
