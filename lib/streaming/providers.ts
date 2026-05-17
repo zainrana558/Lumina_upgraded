@@ -9,24 +9,24 @@ export interface StreamProvider {
 
 /**
  * Streaming providers ordered by priority:
- * 1. AutoEmbed - Best iframe compatibility 
- * 2. VidSrc - Backup
+ * 1. VidSrc - Most reliable, fast loading (primary)
+ * 2. AutoEmbed - Backup (better iframe support)
  * 3. Other sources as tertiary backups
  */
 const providers: StreamProvider[] = [
   {
-    name: "AutoEmbed",
-    id: "autoembed",
-    priority: 1,
-    getMovieUrl: (id) => `https://autoembed.co/movie/tmdb/${id}`,
-    getTvUrl: (id, s, e) => `https://autoembed.co/tv/tmdb/${id}/${s}/${e}`,
-  },
-  {
     name: "VidSrc",
     id: "vidsrc",
-    priority: 2,
+    priority: 1,
     getMovieUrl: (id) => `https://vidsrc.fyi/embed/movie/${id}`,
     getTvUrl: (id, s, e) => `https://vidsrc.fyi/embed/tv/${id}/${s}/${e}`,
+  },
+  {
+    name: "AutoEmbed",
+    id: "autoembed",
+    priority: 2,
+    getMovieUrl: (id) => `https://autoembed.co/movie/tmdb/${id}`,
+    getTvUrl: (id, s, e) => `https://autoembed.co/tv/tmdb/${id}/${s}/${e}`,
   },
   {
     name: "VidPhantom",
